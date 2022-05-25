@@ -4,23 +4,29 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Board {
-    private static ArrayList<Tile> availableTiles = new ArrayList<>();
-    private static ArrayList<Tile> usedTiles = new ArrayList<>();
-    private static final int NB_SLOOPS = 3;
-    private static final int NB_BRIGANTINES = 2;
-    private static final int NB_GALLEONS = 1;
-    private static final int NB_MINES = 3;
+    private ArrayList<Tile> availableTiles = new ArrayList<>();
+    private ArrayList<Tile> usedTiles = new ArrayList<>();
+    private ArrayList<Ship> ships = new ArrayList<>();
+    private ArrayList<Mine> mines = new ArrayList<>();
+    private final int NB_SLOOPS = 3;
+    private final int NB_BRIGANTINES = 2;
+    private final int NB_GALLEONS = 1;
+    private final int NB_MINES = 3;
 
-    public static void markAvailableTiles(Tile tile) {
+    public Board() {
+    }
+
+    public void markAvailableTiles(Tile tile) {
         availableTiles.add(tile);
     }
 
-    public static void generate() throws Exception {
+    public void generate() throws Exception {
         int sloops = 0;
         while (sloops < NB_SLOOPS) {
             Ship res = generateShip(Ship.Type.SLOOP);
             if (res != null) {
                 sloops++;
+                ships.add(res);
             }
         }
 
@@ -29,6 +35,7 @@ public class Board {
             Ship res = generateShip(Ship.Type.BRIGANTINE);
             if (res != null) {
                 brigantines++;
+                ships.add(res);
             }
         }
 
@@ -37,17 +44,33 @@ public class Board {
             Ship res = generateShip(Ship.Type.GALLEON);
             if (res != null) {
                 galleons++;
+                ships.add(res);
             }
         }
 
         int mines = 0;
-        while(mines < NB_MINES) {
+        while (mines < NB_MINES) {
             Mine res = generateMine();
             mines++;
         }
     }
 
-    private static Ship generateShip(Ship.Type type) throws Exception {
+    public void reset() throws Exception {
+        for (Tile tile : usedTiles) {
+            availableTiles.add(tile);
+        }
+
+        for (Tile tile : availableTiles) {
+            tile.setState(Tile.Status.INTACT);
+        }
+
+        usedTiles = new ArrayList<>();
+        ships = new ArrayList<>();
+        mines = new ArrayList<>();
+        generate();
+    }
+
+    private Ship generateShip(Ship.Type type) throws Exception {
         ArrayList<Tile> allTiles = new ArrayList();
         Tile currentTile = randomTile();
         Tile nextTile;
@@ -131,12 +154,14 @@ public class Board {
         }
     }
 
-    public static Mine generateMine() {
+    public Mine generateMine() {
         Tile tile = randomTile();
 
         Mine mine = new Mine();
-        mine.setTile(tile);
-        mine.addMineTiles(tile);
+        ArrayList<Tile> tiles = new ArrayList<>();
+        tiles.add(tile);
+        mine.setTiles(tiles);
+        mines.add(mine);
 
         tile.getStyleClass().addAll("mine-tile");
         useTile(tile);
@@ -144,12 +169,12 @@ public class Board {
         return mine;
     }
 
-    private static Tile randomTile() {
+    private Tile randomTile() {
         int index = getRandomIndex();
         return availableTiles.get(index);
     }
 
-    private static void useTile(Tile tile) {
+    private void useTile(Tile tile) {
         if (!usedTiles.contains(tile)) {
             usedTiles.add(tile);
         }
@@ -162,7 +187,7 @@ public class Board {
         System.out.println("Available Size: " + availableTiles.size() + ", Used Size: " + usedTiles.size());
     }
 
-    private static void disableNeighbourTiles(Tile tile) {
+    private void disableNeighbourTiles(Tile tile) {
         Tile leftTile = findTile(tile.getX() - 1, tile.getY());
         if (leftTile != null) {
             useTile(leftTile);
@@ -204,7 +229,7 @@ public class Board {
         }
     }
 
-    private static Tile findTile(int x, int y) {
+    private Tile findTile(int x, int y) {
         for (Tile tile : availableTiles) {
             if (x == tile.getX() && y == tile.getY()) {
                 return tile;
@@ -214,7 +239,7 @@ public class Board {
         return null;
     }
 
-    private static int getRandomIndex() {
+    private int getRandomIndex() {
         Random r = new Random();
         int low = 1;
         int high = availableTiles.size();
@@ -222,7 +247,7 @@ public class Board {
         return r.nextInt(high - low) + low;
     }
 
-    private static char randomDirection() {
+    private char randomDirection() {
         Random r = new Random();
         int low = 1;
         int high = 4;
@@ -235,5 +260,33 @@ public class Board {
             case 4 -> 'l';
             default -> 't';
         };
+    }
+
+    public Ship findShip(Tile tile) {
+        for (Ship ship : ships) {
+            if (ship.getTiles().contains(tile)) {
+                return ship;
+            }
+        }
+
+        return null;
+    }
+
+    public Mine findMine(Tile tile) {
+        for (Mine mine : mines) {
+            if (mine.getTiles().contains(tile)) {
+                return mine;
+            }
+        }
+
+        return null;
+    }
+
+    public ArrayList<Ship> getShips() {
+        return ships;
+    }
+
+    public ArrayList<Mine> getMines() {
+        return mines;
     }
 }

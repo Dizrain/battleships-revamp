@@ -13,12 +13,6 @@ public abstract class Ship implements GameObject {
         GALLEON
     }
 
-    public enum Status {
-        DESTROYED,
-        HIT,
-        INTACT
-    }
-
     public Ship() {
     }
 
@@ -27,26 +21,29 @@ public abstract class Ship implements GameObject {
         this.nbTiles = nbTiles;
     }
 
-    public Status getStatus() {
-        Ship.Status status = Status.INTACT;
-
-        if (tiles.size() == 0) {
-            status = Status.DESTROYED;
-        } else if (tiles.size() > 0 && tiles.size() < nbTiles) {
-            status = Status.HIT;
-        } else if (tiles.size() == nbTiles) {
-            status = Status.INTACT;
-        }
-
-        return status;
-    }
-
     @Override
     public ArrayList<Tile> getTiles() {
         return tiles;
     }
 
+    @Override
     public void setTiles(ArrayList<Tile> tiles) {
         this.tiles = tiles;
+    }
+
+    public void handleHit(Tile tile) {
+       tile.setState(Tile.Status.HIT);
+       if(isDestroyed()){
+           for (Tile shipTile : tiles) {
+               shipTile.setState(Tile.Status.DESTROYED);
+           }
+       }
+    }
+
+    private boolean isDestroyed() {
+        for (Tile tile : tiles) {
+            if (tile.getState() == Tile.Status.INTACT) return false;
+        }
+        return true;
     }
 }

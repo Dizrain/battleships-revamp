@@ -1,6 +1,7 @@
 package com.battleships.battleshipsrevamp;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,6 +16,7 @@ public class Main extends Application {
     private static final int TILE_SIZE = 40;
     private static final int PADDING = (int) (TILE_SIZE * 0.03d);
     private static final int MARGIN = 25;
+    private final Board board = new Board();
     private final Tile[][] grid = new Tile[TILES][TILES];
     private final Pane root = new Pane();
 
@@ -40,6 +42,20 @@ public class Main extends Application {
 
         stage.setScene(new Scene(root, windowSize, windowSize + 30));
         root.getChildren().add(gameMenu);
+
+        EventHandler<ActionEvent> resetHandler = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    board.reset();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        resetButton.setOnAction(resetHandler);
+
         stage.setResizable(false);
         stage.sizeToScene();
         stage.show();
@@ -50,20 +66,35 @@ public class Main extends Application {
         for (int i = 0; i < TILES; i++) {
             for (int j = 0; j < TILES; j++) {
                 Tile tile = new Tile(i, j);
-                Board.markAvailableTiles(tile);
+                board.markAvailableTiles(tile);
                 tile.setTranslateX((i * TILE_SIZE + PADDING * i) + MARGIN);
                 tile.setTranslateY((j * TILE_SIZE + PADDING * j) + MARGIN);
                 tile.setPrefSize(TILE_SIZE, TILE_SIZE);
-                tile.getStyleClass().addAll("tile");
+                tile.setState(Tile.Status.INTACT);
 
                 EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
                         // If the tile is a ship tile && is not clicked, then
-                        // If the tile is a mine tile && is not clicked, then
-                        // Else
-                        tile.getStyleClass().addAll("clicked-empty-tile");
+                        if (tile.isClicked()) {
+                            return;
+                        }
+
                         tile.setClicked(true);
+
+                        Ship ship = board.findShip(tile);
+                        if (ship != null) {
+                            ship.handleHit(tile);
+                            return;
+                        }
+
+                        Mine mine = board.findMine(tile);
+                        if (mine != null) {
+                            mine.handleHit(tile);
+                            return;
+                        }
+
+                        tile.setState(Tile.Status.MISSED);
                     }
                 };
 
@@ -74,12 +105,10 @@ public class Main extends Application {
             }
         }
 
-        Board.generate();
+        board.generate();
     }
 
     // TODO:
-    // 1. Make different effects for MouseEvent depending on the tile clicked
-    // 2. Make boats status work with clicks (Destroyed, etc)
     // 3. Make something happen when all boats are destroyed
     // 4. Make something happen when mine is clicked
     // 5. Implement the Play button

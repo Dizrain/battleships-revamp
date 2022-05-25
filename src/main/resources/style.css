@@ -14,14 +14,38 @@
     -fx-background-color: green;
 }
 
+.boat-hit-tile {
+    -fx-background-color: linear-gradient(#ffd642 ,#ffd026);
+}
+
+.boat-hit-tile:hover {
+    -fx-background-color: linear-gradient(#ffd642 ,#ffd026);
+}
+
+.boat-destroyed-tile {
+    -fx-background-color: linear-gradient(#1f1313, #080505);
+}
+
+.boat-destroyed-tile:hover {
+    -fx-background-color: linear-gradient(#1f1313, #080505);
+}
+
 .mine-tile {
     -fx-background-color: red;
 }
 
-.clicked-empty-tile {
+.mine-exploded-tile {
+    -fx-background-color: linear-gradient(#ed1f29, #e0101a);
+}
+
+.mine-exploded-tile:hover {
+    -fx-background-color: linear-gradient(#ed1f29, #e0101a);
+}
+
+.missed-tile {
     -fx-background-color: #636363;
 }
 
-.clicked-empty-tile:hover {
-    -fx-background-color: linear-gradient(#7f9194, #5c696b);
+.missed-tile:hover {
+    -fx-background-color: #636363;
 }

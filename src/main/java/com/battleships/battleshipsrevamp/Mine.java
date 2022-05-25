@@ -3,10 +3,14 @@ package com.battleships.battleshipsrevamp;
 import java.util.ArrayList;
 
 public class Mine implements GameObject {
-    private Tile tile = new Tile();
     private ArrayList<Tile> tiles = new ArrayList<Tile>();
 
     public Mine() {
+    }
+
+    public void handleHit(Tile tile) {
+        tile.setState(Tile.Status.EXPLODED);
+
     }
 
     @Override
@@ -14,11 +18,8 @@ public class Mine implements GameObject {
         return tiles;
     }
 
-    public void setTile(Tile tile) {
-        this.tile = tile;
-    }
-
-    public void addMineTiles(Tile tile) {
-        tiles.add(tile);
+    @Override
+    public void setTiles(ArrayList<Tile> tiles) {
+        this.tiles = tiles;
     }
 }
