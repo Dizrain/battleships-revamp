@@ -40,6 +40,23 @@ public abstract class Ship implements GameObject {
        }
     }
 
+    public void enableCheatMode() {
+        for (Tile tile: tiles){
+            if(tile.getState() == Tile.Status.INTACT){
+                tile.getStyleClass().clear();
+                tile.getStyleClass().addAll("boat-tile");
+            }
+        }
+    }
+
+    public void disableCheatMode() {
+        for (Tile tile: tiles){
+            if(tile.getState() == Tile.Status.INTACT){
+                tile.setState(Tile.Status.INTACT);
+            }
+        }
+    }
+
     private boolean isDestroyed() {
         for (Tile tile : tiles) {
             if (tile.getState() == Tile.Status.INTACT) return false;

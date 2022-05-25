@@ -1,6 +1,9 @@
 package com.battleships.battleshipsrevamp;
 
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -9,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -32,13 +36,29 @@ public class Main extends Application {
         gameMenu.setMaxWidth(windowSize);
         gameMenu.setMinWidth(windowSize);
 
-        Button playButton = new Button("Play");
+        Text toggleSwitchText = new Text("Cheat mode: ");
+        ToggleSwitch toggle = new ToggleSwitch();
+        toggle.switchedOnProperty().addListener(
+                new ChangeListener<Boolean>() {
+                    @Override
+                    public void changed(
+                            ObservableValue<? extends Boolean> observable,
+                            Boolean oldValue, Boolean newValue
+                    ) {
+                        if (newValue) {
+                            board.setCheatMode(true);
+                        } else {
+                            board.setCheatMode(false);
+                        }
+                    }
+                }
+        );
         Button resetButton = new Button("Reset");
-        HBox gameMenuPos = new HBox(15, playButton, resetButton);
+        HBox gameMenuPos = new HBox(15, toggleSwitchText, toggle, resetButton);
         gameMenu.getChildren().addAll(gameMenuPos);
 
         gameMenu.setLayoutY(windowSize - 15);
-        gameMenu.setLayoutX(182);
+        gameMenu.setLayoutX(110);
 
         stage.setScene(new Scene(root, windowSize, windowSize + 30));
         root.getChildren().add(gameMenu);
@@ -111,9 +131,6 @@ public class Main extends Application {
     // TODO:
     // 3. Make something happen when all boats are destroyed
     // 4. Make something happen when mine is clicked
-    // 5. Implement the Play button
-    // 6. Implement the Reset button
-    // 7. Make all tiles invisible and only shown when clicked on them
 
     public static void main(String[] args) {
         launch();

@@ -12,6 +12,7 @@ public class Board {
     private final int NB_BRIGANTINES = 2;
     private final int NB_GALLEONS = 1;
     private final int NB_MINES = 3;
+    private boolean cheatMode = false;
 
     public Board() {
     }
@@ -62,12 +63,17 @@ public class Board {
 
         for (Tile tile : availableTiles) {
             tile.setState(Tile.Status.INTACT);
+            tile.setClicked(false);
         }
 
         usedTiles = new ArrayList<>();
         ships = new ArrayList<>();
         mines = new ArrayList<>();
         generate();
+
+        if (cheatMode) {
+            enableCheatMode();
+        }
     }
 
     private Ship generateShip(Ship.Type type) throws Exception {
@@ -127,7 +133,6 @@ public class Board {
 
         for (Tile tile : allTiles) {
             useTile(tile);
-            tile.getStyleClass().addAll("boat-tile");
         }
 
         for (Tile tile : allTiles) {
@@ -163,10 +168,64 @@ public class Board {
         mine.setTiles(tiles);
         mines.add(mine);
 
-        tile.getStyleClass().addAll("mine-tile");
         useTile(tile);
 
         return mine;
+    }
+
+    public Ship findShip(Tile tile) {
+        for (Ship ship : ships) {
+            if (ship.getTiles().contains(tile)) {
+                return ship;
+            }
+        }
+
+        return null;
+    }
+
+    public Mine findMine(Tile tile) {
+        for (Mine mine : mines) {
+            if (mine.getTiles().contains(tile)) {
+                return mine;
+            }
+        }
+
+        return null;
+    }
+
+    public void enableCheatMode() {
+        for (Ship ship : ships) {
+            ship.enableCheatMode();
+        }
+        for (Mine mine : mines) {
+            mine.enableCheatMode();
+        }
+    }
+
+    public void disableCheatMode() {
+        for (Ship ship : ships) {
+            ship.disableCheatMode();
+        }
+        for (Mine mine : mines) {
+            mine.disableCheatMode();
+        }
+    }
+
+    public ArrayList<Ship> getShips() {
+        return ships;
+    }
+
+    public ArrayList<Mine> getMines() {
+        return mines;
+    }
+
+    public void setCheatMode(boolean cheatMode) {
+        this.cheatMode = cheatMode;
+        if (cheatMode) {
+            enableCheatMode();
+        } else {
+            disableCheatMode();
+        }
     }
 
     private Tile randomTile() {
@@ -260,33 +319,5 @@ public class Board {
             case 4 -> 'l';
             default -> 't';
         };
-    }
-
-    public Ship findShip(Tile tile) {
-        for (Ship ship : ships) {
-            if (ship.getTiles().contains(tile)) {
-                return ship;
-            }
-        }
-
-        return null;
-    }
-
-    public Mine findMine(Tile tile) {
-        for (Mine mine : mines) {
-            if (mine.getTiles().contains(tile)) {
-                return mine;
-            }
-        }
-
-        return null;
-    }
-
-    public ArrayList<Ship> getShips() {
-        return ships;
-    }
-
-    public ArrayList<Mine> getMines() {
-        return mines;
     }
 }
