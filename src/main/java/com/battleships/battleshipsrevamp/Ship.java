@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public abstract class Ship implements GameObject {
     private ArrayList<Tile> tiles = new ArrayList<Tile>();
     private Type type;
-    private  int nbTiles;
+    private int nbTiles;
 
     public enum Type {
         SLOOP,
@@ -19,9 +19,10 @@ public abstract class Ship implements GameObject {
         INTACT
     }
 
-    public Ship(){}
+    public Ship() {
+    }
 
-    public Ship(Type type, int nbTiles){
+    public Ship(Type type, int nbTiles) {
         this.type = type;
         this.nbTiles = nbTiles;
     }
@@ -40,6 +41,7 @@ public abstract class Ship implements GameObject {
         return status;
     }
 
+    @Override
     public ArrayList<Tile> getTiles() {
         return tiles;
     }

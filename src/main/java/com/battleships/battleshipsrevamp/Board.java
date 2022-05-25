@@ -9,6 +9,7 @@ public class Board {
     private static final int NB_SLOOPS = 3;
     private static final int NB_BRIGANTINES = 2;
     private static final int NB_GALLEONS = 1;
+    private static final int NB_MINES = 3;
 
     public static void markAvailableTiles(Tile tile) {
         availableTiles.add(tile);
@@ -31,12 +32,18 @@ public class Board {
             }
         }
 
-        int galeons = 0;
-        while (galeons < NB_GALLEONS) {
+        int galleons = 0;
+        while (galleons < NB_GALLEONS) {
             Ship res = generateShip(Ship.Type.GALLEON);
             if (res != null) {
-                galeons++;
+                galleons++;
             }
+        }
+
+        int mines = 0;
+        while(mines < NB_MINES) {
+            Mine res = generateMine();
+            mines++;
         }
     }
 
@@ -47,6 +54,7 @@ public class Board {
         char direction = randomDirection();
 
         int nbTiles = 0;
+
         switch (type) {
             case SLOOP -> nbTiles = Sloop.TILES;
             case BRIGANTINE -> nbTiles = Brigantine.TILES;
@@ -123,6 +131,19 @@ public class Board {
         }
     }
 
+    public static Mine generateMine() {
+        Tile tile = randomTile();
+
+        Mine mine = new Mine();
+        mine.setTile(tile);
+        mine.addMineTiles(tile);
+
+        tile.getStyleClass().addAll("mine-tile");
+        useTile(tile);
+
+        return mine;
+    }
+
     private static Tile randomTile() {
         int index = getRandomIndex();
         return availableTiles.get(index);
@@ -137,6 +158,7 @@ public class Board {
             availableTiles.remove(tile);
         }
 
+        // TODO: Remove this line when done
         System.out.println("Available Size: " + availableTiles.size() + ", Used Size: " + usedTiles.size());
     }
 

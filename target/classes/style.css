@@ -13,3 +13,7 @@
 .boat-tile {
     -fx-background-color: green;
 }
+
+.mine-tile {
+    -fx-background-color: red;
+}
