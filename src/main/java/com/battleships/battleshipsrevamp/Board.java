@@ -184,23 +184,23 @@ public class Board {
         }
 
         Tile topLeftTile = findTile(tile.getX() - 1, tile.getY() - 1);
-        if (leftTile != null) {
-            useTile(leftTile);
+        if (topLeftTile != null) {
+            useTile(topLeftTile);
         }
 
         Tile bottomLeftTile = findTile(tile.getX() - 1, tile.getY() + 1);
-        if (leftTile != null) {
-            useTile(leftTile);
+        if (bottomLeftTile != null) {
+            useTile(bottomLeftTile);
         }
 
         Tile topRightTile = findTile(tile.getX() + 1, tile.getY() - 1);
-        if (leftTile != null) {
-            useTile(leftTile);
+        if (topRightTile != null) {
+            useTile(topRightTile);
         }
 
         Tile bottomRightTile = findTile(tile.getX() + 1, tile.getY() + 1);
-        if (leftTile != null) {
-            useTile(leftTile);
+        if (bottomRightTile != null) {
+            useTile(bottomRightTile);
         }
     }
 
