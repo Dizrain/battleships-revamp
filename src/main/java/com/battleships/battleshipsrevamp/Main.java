@@ -1,14 +1,14 @@
 package com.battleships.battleshipsrevamp;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class Main extends Application {
     private static final int TILES = 10;
@@ -55,7 +55,20 @@ public class Main extends Application {
                 tile.setTranslateY((j * TILE_SIZE + PADDING * j) + MARGIN);
                 tile.setPrefSize(TILE_SIZE, TILE_SIZE);
                 tile.getStyleClass().addAll("tile");
-                // tile.setOnMouseClicked(this::handleClick);
+
+                EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+                        // If the tile is a ship tile && is not clicked, then
+                        // If the tile is a mine tile && is not clicked, then
+                        // Else
+                        tile.getStyleClass().addAll("clicked-empty-tile");
+                        tile.setClicked(true);
+                    }
+                };
+
+                tile.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
+
                 grid[i][j] = tile;
                 root.getChildren().add(tile);
             }
@@ -63,6 +76,15 @@ public class Main extends Application {
 
         Board.generate();
     }
+
+    // TODO:
+    // 1. Make different effects for MouseEvent depending on the tile clicked
+    // 2. Make boats status work with clicks (Destroyed, etc)
+    // 3. Make something happen when all boats are destroyed
+    // 4. Make something happen when mine is clicked
+    // 5. Implement the Play button
+    // 6. Implement the Reset button
+    // 7. Make all tiles invisible and only shown when clicked on them
 
     public static void main(String[] args) {
         launch();

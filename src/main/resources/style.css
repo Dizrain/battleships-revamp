@@ -17,3 +17,11 @@
 .mine-tile {
     -fx-background-color: red;
 }
+
+.clicked-empty-tile {
+    -fx-background-color: #636363;
+}
+
+.clicked-empty-tile:hover {
+    -fx-background-color: linear-gradient(#7f9194, #5c696b);
+}
