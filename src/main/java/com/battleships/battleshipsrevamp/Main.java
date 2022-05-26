@@ -14,6 +14,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.kordamp.bootstrapfx.BootstrapFX;
+import javafx.scene.media.*;
+
+import java.io.File;
 
 public class Main extends Application {
     private static final int TILES = 10;
@@ -25,8 +28,22 @@ public class Main extends Application {
     private final Pane root = new Pane();
     private final ToggleSwitch toggle = new ToggleSwitch();
 
-    private final String emptyTileSound = "mixkit-arcade-mechanical-bling-210.wav";
+    private final String baseFilePath = "src/main/resources/sounds/";
 
+    private final String emptyTileSoundFile = baseFilePath + "emptyTile.wav";
+    Media emptyTileSound = new Media(new File(emptyTileSoundFile).toURI().toString());
+
+    private final String shipTileSoundFile = baseFilePath + "shipTile.mp3";
+    Media shipTileSound = new Media(new File(shipTileSoundFile).toURI().toString());
+
+    private final String shipDestroyedSoundFile = baseFilePath + "fullShip.mp3";
+    Media shipDestroyedSound = new Media(new File(shipDestroyedSoundFile).toURI().toString());
+
+    private final String mineSoundFile = baseFilePath + "mineTile.mp3";
+    Media mineSound = new Media(new File(mineSoundFile).toURI().toString());
+
+    private final String winSoundFile = baseFilePath + "win.mp3";
+    Media winSound = new Media(new File(winSoundFile).toURI().toString());
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -113,6 +130,13 @@ public class Main extends Application {
                         Ship ship = board.findShip(tile);
                         if (ship != null) {
                             ship.handleHit(tile);
+                            if (!ship.isDestroyed()) {
+                                MediaPlayer mediaPlayer = new MediaPlayer(shipTileSound);
+                                mediaPlayer.play();
+                            } else {
+                                MediaPlayer mediaPlayer = new MediaPlayer(shipDestroyedSound);
+                                mediaPlayer.play();
+                            }
                             // Check if all ships are destroyed
                             boolean gameOver = true;
                             for (Ship ship1 : board.getShips()) {
@@ -131,10 +155,14 @@ public class Main extends Application {
                         Mine mine = board.findMine(tile);
                         if (mine != null) {
                             mine.handleHit(tile);
+                            MediaPlayer mediaPlayer = new MediaPlayer(mineSound);
+                            mediaPlayer.play();
                             onDefeat();
                             return;
                         }
 
+                        MediaPlayer mediaPlayer = new MediaPlayer(emptyTileSound);
+                        mediaPlayer.play();
                         tile.setState(Tile.Status.MISSED);
                     }
                 };
@@ -152,6 +180,8 @@ public class Main extends Application {
     private void onWin() {
         toggle.setValue(true);
         lockTiles();
+        MediaPlayer mediaPlayer = new MediaPlayer(winSound);
+        mediaPlayer.play();
         Alert.display("You won!", "Congratulations! You destroyed all enemy ships.");
     }
 
