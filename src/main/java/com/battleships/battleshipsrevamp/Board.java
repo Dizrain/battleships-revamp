@@ -242,8 +242,7 @@ public class Board {
             availableTiles.remove(tile);
         }
 
-        // TODO: Remove this line when done
-        System.out.println("Available Size: " + availableTiles.size() + ", Used Size: " + usedTiles.size());
+        // System.out.println("Available Size: " + availableTiles.size() + ", Used Size: " + usedTiles.size());
     }
 
     private void disableNeighbourTiles(Tile tile) {

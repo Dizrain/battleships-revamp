@@ -1,7 +1,6 @@
 package com.battleships.battleshipsrevamp;
 
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -14,6 +13,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.kordamp.bootstrapfx.BootstrapFX;
 
 public class Main extends Application {
     private static final int TILES = 10;
@@ -23,6 +23,10 @@ public class Main extends Application {
     private final Board board = new Board();
     private final Tile[][] grid = new Tile[TILES][TILES];
     private final Pane root = new Pane();
+    private final ToggleSwitch toggle = new ToggleSwitch();
+
+    private final String emptyTileSound = "mixkit-arcade-mechanical-bling-210.wav";
+
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -37,7 +41,6 @@ public class Main extends Application {
         gameMenu.setMinWidth(windowSize);
 
         Text toggleSwitchText = new Text("Cheat mode: ");
-        ToggleSwitch toggle = new ToggleSwitch();
         toggle.switchedOnProperty().addListener(
                 new ChangeListener<Boolean>() {
                     @Override
@@ -53,20 +56,25 @@ public class Main extends Application {
                     }
                 }
         );
-        Button resetButton = new Button("Reset");
+        Button resetButton = new Button("New Game");
+        resetButton.getStyleClass().addAll("btn", "btn-primary");
         HBox gameMenuPos = new HBox(15, toggleSwitchText, toggle, resetButton);
         gameMenu.getChildren().addAll(gameMenuPos);
 
         gameMenu.setLayoutY(windowSize - 15);
         gameMenu.setLayoutX(110);
 
-        stage.setScene(new Scene(root, windowSize, windowSize + 30));
+        Scene scene = new Scene(root, windowSize, windowSize + 30);
+        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+        stage.setScene(scene);
+
         root.getChildren().add(gameMenu);
 
         EventHandler<ActionEvent> resetHandler = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 try {
+                    toggle.setValue(false);
                     board.reset();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -105,12 +113,25 @@ public class Main extends Application {
                         Ship ship = board.findShip(tile);
                         if (ship != null) {
                             ship.handleHit(tile);
+                            // Check if all ships are destroyed
+                            boolean gameOver = true;
+                            for (Ship ship1 : board.getShips()) {
+                                if (!ship1.isDestroyed()) {
+                                    gameOver = false;
+                                    break;
+                                }
+                            }
+                            if (gameOver) {
+                                onWin();
+                            }
+
                             return;
                         }
 
                         Mine mine = board.findMine(tile);
                         if (mine != null) {
                             mine.handleHit(tile);
+                            onDefeat();
                             return;
                         }
 
@@ -128,9 +149,26 @@ public class Main extends Application {
         board.generate();
     }
 
-    // TODO:
-    // 3. Make something happen when all boats are destroyed
-    // 4. Make something happen when mine is clicked
+    private void onWin() {
+        toggle.setValue(true);
+        lockTiles();
+        Alert.display("You won!", "Congratulations! You destroyed all enemy ships.");
+    }
+
+    private void onDefeat() {
+        toggle.setValue(true);
+        lockTiles();
+        Alert.display("You lost!", "Oh no, looks like you've exploded on a mine. You can try again!");
+
+    }
+
+    private void lockTiles() {
+        for (int row = 0; row < grid.length; row++) {
+            for (int column = 0; column < grid[row].length; column++) {
+                grid[row][column].setClicked(true);
+            }
+        }
+    }
 
     public static void main(String[] args) {
         launch();

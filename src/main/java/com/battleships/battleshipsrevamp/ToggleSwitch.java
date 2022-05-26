@@ -51,6 +51,9 @@ public class ToggleSwitch extends Parent {
         setOnMouseClicked(event -> {
             switchedOn.set(!switchedOn.get());
         });
+    }
 
+    public void setValue(boolean value){
+        switchedOn.set(value);
     }
 }

@@ -57,7 +57,7 @@ public abstract class Ship implements GameObject {
         }
     }
 
-    private boolean isDestroyed() {
+    public boolean isDestroyed() {
         for (Tile tile : tiles) {
             if (tile.getState() == Tile.Status.INTACT) return false;
         }
